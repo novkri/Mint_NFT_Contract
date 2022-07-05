@@ -9,12 +9,15 @@ import "hardhat/console.sol";
 
 import { Base64 } from "./libraries/Base64.sol";
 
+
 //inherit the contract we imported. This means we'll have access
 // to the inherited contract's methods
 contract MyEpicNFT is ERC721URIStorage {
     // Magic given to us by OpenZeppelin to help us keep track of tokenIds.
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+
+    uint256 public maxMintAmount = 100;
 
     // We split the SVG at the part where it asks for the background color.
     string svgPartOne = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='";
@@ -70,6 +73,8 @@ contract MyEpicNFT is ERC721URIStorage {
 
     // A function our user will hit to get their NFT.
     function makeAnEpicNFT() public {
+        require(_tokenIds.current() <= maxMintAmount);
+
         // get the current tokenId, starts at 0
         uint256 newItemId = _tokenIds.current();
 
@@ -102,6 +107,7 @@ contract MyEpicNFT is ERC721URIStorage {
         string memory finalTokenUri = string(
             abi.encodePacked("data:application/json;base64,", json)
         );
+
 
         console.log("\n--------------------");
         console.log(finalTokenUri);
